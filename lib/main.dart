@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather/weather.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MainApp());
 }
 
@@ -26,9 +28,11 @@ class _MainAppState extends State<MainApp> {
 
   Future<WeatherResponse> getData() async {
     var client = http.Client();
+    String APIKEY = dotenv.env['API_KEY'] ?? "";
+    print(APIKEY);
     try {
       var response = await client.get(Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?q=bangkok&units=metric&appid=6378ac581297b40ccb71e6f85e65e17a'));
+          'https://api.openweathermap.org/data/2.5/weather?q=bangkok&units=metric&appid=$APIKEY'));
       if (response.statusCode == 200) {
         return WeatherResponse.fromJson(
             jsonDecode(utf8.decode(response.bodyBytes)));
